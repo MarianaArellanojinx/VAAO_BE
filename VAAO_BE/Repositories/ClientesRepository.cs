@@ -15,19 +15,23 @@ namespace VAAO_BE.Repositories
             _context = context;
         }
 
-    
+
         public async Task CreateCliente(Clientes payload)
         {
             try
             {
-                await _context.AddAsync(payload);
-                _context.SaveChanges();
+                payload.FechaAlta = DateTime.Now;
+                payload.FechaBaja = null;
+
+                await _context.Clientes.AddAsync(payload);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
         }
+
 
         public async Task DeleteCliente(int id)
         {
