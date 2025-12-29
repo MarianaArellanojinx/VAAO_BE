@@ -7,6 +7,7 @@ namespace VAAO_BE.Entities
     public class Repartidores
     {
         public int IdRepartidor { get; set; }
+        public int IdUser { get; set; }
 
         public string NombreRepartidor { get; set; } = null!;
 

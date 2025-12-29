@@ -1,8 +1,10 @@
 ﻿
 
 
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using VAAO_BE.Entities;
+using VAAO_BE.Repositories;
 using VAAO_BE.Repositories.Interfaces;
 
 namespace VAAO_BE.Controllers
@@ -57,7 +59,7 @@ namespace VAAO_BE.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUsers(int id)
         {
             await _usersRepository.DeleteUser(id);
             return Ok(new
@@ -67,5 +69,25 @@ namespace VAAO_BE.Controllers
                 status = true
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginRequest request)
+        {
+            var user = await _usersRepository.Login(request.UserName, request.Password);
+
+            return Ok(new
+            {
+                data = new
+                {
+                    user.IdUser,
+                    user.UserName,
+                    user.Rol
+                },
+                message = string.Empty,
+                status = true
+            });
+        }
+
+
     }
 }

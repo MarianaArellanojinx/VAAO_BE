@@ -46,5 +46,29 @@ namespace VAAO_BE.Controllers
             });
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, Clientes payload)
+        {
+            await _clientesRepository.UpdateCliente(id, payload);
+            return Ok(new
+            {
+                data = true,
+                message = string.Empty,
+                status = true
+            });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCientes(int id)
+        {
+            await _clientesRepository.DeleteCliente(id);
+            return Ok(new
+            {
+                data = true,
+                message = string.Empty,
+                status = true
+            });
+        }
+
     }
 }

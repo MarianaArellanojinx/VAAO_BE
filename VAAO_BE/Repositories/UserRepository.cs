@@ -71,5 +71,32 @@ namespace VAAO_BE.Repositories
 
             }
         }
+
+        public async Task<Users> Login(string userName, string password)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == userName);
+
+                if (user == null)
+                    throw new Exception("Usuario no encontrado");
+
+                if (!user.IsActive)
+                    throw new Exception("Usuario inactivo");
+
+               
+                if (user.UserPassword != password)
+                    throw new Exception("Contraseña incorrecta");
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+
     }
 }
