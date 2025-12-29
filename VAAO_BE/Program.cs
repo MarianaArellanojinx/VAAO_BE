@@ -23,6 +23,7 @@ builder.Services.AddDbContext<VAAOContext>();
 builder.Services.AddScoped<IUsersRepository, UserRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
 builder.Services.AddScoped<IRepartidoresRepository, RepartidoresRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidosRepository>();
 var app = builder.Build();
 app.UseCors("all");
 // Configure the HTTP request pipeline.
