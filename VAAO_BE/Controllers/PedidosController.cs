@@ -44,7 +44,17 @@ namespace VAAO_BE.Controllers
                 status = true
             });
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetPedidosFiltrados(DateTime start, DateTime end)
+        {
+            var result = await _pedidoRepository.GetAllPedidos();
+            return Ok(new
+            {
+                data = result.Where(x => x.FechaPedido >= start && x.FechaPedido <= end).ToList(),
+                message = string.Empty,
+                status = true
+            });
+        }
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdatePedido(int id, Pedidos payload)
         {
