@@ -26,5 +26,6 @@ namespace VAAO_BE.Entities
         public DateTime FechaAlta { get; set; }
 
         public DateTime? FechaBaja { get; set; }
+        public int? IdUser { get; set; }
     }
 }

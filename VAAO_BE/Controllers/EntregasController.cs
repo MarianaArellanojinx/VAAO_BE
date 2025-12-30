@@ -9,21 +9,23 @@ namespace VAAO_BE.Controllers
     public class EntregasController : ControllerBase
     {
         private readonly IEntregasRepository _entregasRepository;
-        private readonly IWebHostEnvironment _env;
 
         public EntregasController(
-            IEntregasRepository entregasRepository,
-            IWebHostEnvironment env)
+            IEntregasRepository entregasRepository)
         {
             _entregasRepository = entregasRepository;
-            _env = env;
         }
     
         [HttpGet("GetAllEntregas")]
         public async Task<IActionResult> GetAllEntregas()
         {
             var entregas = await _entregasRepository.GetAllEntregas();
-            return Ok(entregas);
+            return Ok(new
+            {
+                data = entregas,
+                message = "",
+                status = true
+            });
         }
 
         [HttpPost("CreateEntrega")]
