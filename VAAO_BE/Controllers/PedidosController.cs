@@ -50,7 +50,7 @@ namespace VAAO_BE.Controllers
             var result = await _pedidoRepository.GetAllPedidos();
             return Ok(new
             {
-                data = result.Where(x => x.FechaPedido >= start && x.FechaPedido <= end).ToList(),
+                data = result.Where(x => x.FechaPedido >= start.Date && x.FechaPedido <= end.Date.AddDays(1)).ToList(),
                 message = string.Empty,
                 status = true
             });
