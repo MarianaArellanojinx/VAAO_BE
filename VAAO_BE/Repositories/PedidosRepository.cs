@@ -63,8 +63,27 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                var pedido = await _context.Pedidos.ToListAsync();
-                return pedido;
+                var pedidos = await (
+                    from p in _context.Pedidos
+                    join c in _context.Clientes
+                        on p.IdCliente equals c.IdCliente
+                    select new Pedidos
+                    {
+                        IdPedido = p.IdPedido,
+                        IdCliente = p.IdCliente,         
+                        FechaPedido = p.FechaPedido,
+                        FechaProgramada = p.FechaProgramada,
+                        TotalBolsas = p.TotalBolsas,
+                        PrecioUnitario = p.PrecioUnitario,
+                        TotalPagar = p.TotalPagar,
+                        EstatusPedido = p.EstatusPedido,
+                        Observaciones = p.Observaciones,
+                        IdRepartidor = p.IdRepartidor,
+                        NombreCliente = c.NombreNegocio
+                    }
+                ).ToListAsync();
+
+                return pedidos;
             }
             catch (Exception ex)
             {
