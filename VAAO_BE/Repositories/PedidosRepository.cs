@@ -25,13 +25,13 @@ namespace VAAO_BE.Repositories
         {
             try
             {
+                payload.FechaPedido = DateTime.Now;
+                payload.FechaProgramada = DateTime.Now;
+                payload.EstatusPedido = 1;
                 payload.TotalPagar = CalcularTotalPagar(
                     payload.TotalBolsas,
                     payload.PrecioUnitario
                 );
-
-                payload.FechaPedido = DateTime.Now;
-
                 await _context.Pedidos.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
