@@ -11,5 +11,8 @@ namespace VAAO_BE.Entities
         public int IdPedido { get; set; }
 
         public int IdMetodoPago { get; set; }
+
+        public DateTime FechaRegistro { get; set; }
     }
+
 }

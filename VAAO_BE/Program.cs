@@ -26,6 +26,7 @@ builder.Services.AddScoped<IRepartidoresRepository, RepartidoresRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidosRepository>();
 builder.Services.AddScoped<IEntregasRepository, EntregasRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IVentasRepository, VentasRepository>();
 var app = builder.Build();
 app.UseCors("all");
 // Configure the HTTP request pipeline.
