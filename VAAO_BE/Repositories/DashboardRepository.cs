@@ -37,17 +37,23 @@ namespace VAAO_BE.Repositories
                 new
                 {
                     label = "Pendiente aprobación",
-                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == PEDIDO_PENDIENTE_APROBACION)).ToList()
+                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == PEDIDO_PENDIENTE_APROBACION)).ToList(),
+                    borderRadius = 8,
+                    backgroundColor = "#d7f032ff"
                 },
                 new
                 {
                     label = "Aprobado",
-                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == APROBADO)).ToList()
+                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == APROBADO)).ToList(),
+                    borderRadius = 8,
+                    backgroundColor = "#4ef032ff"
                 },
                 new
                 {
                     label = "Cancelado",
-                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == CANCELADO)).ToList()
+                    data = grouped.Select(g => g.Count(p => p.EstatusPedido == CANCELADO)).ToList(),
+                    borderRadius = 8,
+                    backgroundColor = "#f03235ff"
                 }
             };
 
