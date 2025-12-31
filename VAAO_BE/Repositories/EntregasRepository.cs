@@ -72,11 +72,22 @@ namespace VAAO_BE.Repositories
                 entrega.IdPedido = payload.IdPedido;
                 entrega.EstatusReparto = payload.EstatusReparto;
                 entrega.Observaciones = payload.Observaciones;
-                entrega.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
-                entrega.HoraLlegada = payload.HoraLlegada.Value.AddHours(-6);
-                entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
 
-               
+                if (payload.HoraInicio is not null)
+                {
+                    entrega.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
+                }
+
+                if (payload.HoraLlegada is not null)
+                {
+                    entrega.HoraLlegada = payload.HoraLlegada.Value.AddHours(-6);
+                }
+
+                if (payload.HoraRegreso is not null)
+                {
+                    entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
+                }
+
                 entrega.ImagenConservadorLlegada = payload.ImagenConservadorLlegada;
                 entrega.ImagenConservadorSalida = payload.ImagenConservadorSalida;
                 entrega.ImagenIncidenciaConservador = payload.ImagenIncidenciaConservador;
