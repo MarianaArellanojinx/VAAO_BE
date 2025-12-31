@@ -32,21 +32,36 @@ namespace VAAO_BE.Controllers
         public async Task<IActionResult> CreateEntrega([FromBody] Entregas payload)
         {
             await _entregasRepository.CreateEntrega(payload);
-            return Ok("Entrega creada correctamente");
+            return Ok(new
+            {
+                data = true,
+                message = string.Empty,
+                status = true
+            });
         }
 
         [HttpPut("UpdateEntrega/{id}")]
         public async Task<IActionResult> UpdateEntrega(int id, [FromBody] Entregas payload)
         {
             await _entregasRepository.UpdateEntrega(id, payload);
-            return Ok("Entrega actualizada correctamente");
+            return Ok(new
+            {
+                data = true,
+                message = string.Empty,
+                status = true
+            });
         }
 
         [HttpDelete("DeleteEntrega/{id}")]
         public async Task<IActionResult> DeleteEntrega(int id)
         {
             await _entregasRepository.DeleteEntrega(id);
-            return Ok("Entrega eliminada correctamente");
+            return Ok(new
+            {
+                data = true,
+                message = string.Empty,
+                status = true
+            });
         }
 
 
