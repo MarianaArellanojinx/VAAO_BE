@@ -25,6 +25,7 @@ namespace VAAO_BE.Repositories
         {
             try
             {
+                payload.IdRepartidor = null;
                 payload.FechaPedido = payload.FechaPedido.AddHours(-6);
                 payload.FechaProgramada = payload.FechaProgramada.AddHours(-6);
                 payload.EstatusPedido = 1;
