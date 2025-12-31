@@ -125,7 +125,7 @@ namespace VAAO_BE.Repositories
                                 select new
                                 {
                                     total = p.TotalPagar,
-                                    entrega = e.FechaEntrega.Date
+                                    entrega = e.FechaEntrega.Value.Date
                                 }).ToList();
                 return new
                 {
@@ -146,7 +146,7 @@ namespace VAAO_BE.Repositories
                     {
                         labels = aux
                             .OrderBy(x => x.entregado)
-                            .GroupBy(x => x.entregado.Date)
+                            .GroupBy(x => x.entregado.Value.Date)
                             .Select(x => x.Key.ToString("dd-MM-yyyy"))
                             .ToList(),
                         datasets = new[]
@@ -155,7 +155,7 @@ namespace VAAO_BE.Repositories
                             {
                                 label = "Ventas",
                                 data = aux
-                                        .GroupBy(x => x.entregado.Date)
+                                        .GroupBy(x => x.entregado.Value.Date)
                                         .OrderBy(x => x.Key)
                                         .Select(g => g.Sum(x => x.bolsas))
                                         .ToList()
