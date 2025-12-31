@@ -16,6 +16,8 @@ namespace VAAO_BE.Entities
 
         public DateTime? HoraInicio { get; set; }
 
+        public DateTime? HoraLlegada { get; set; }
+
         public DateTime? HoraRegreso { get; set; }
 
         public int EstatusReparto { get; set; }

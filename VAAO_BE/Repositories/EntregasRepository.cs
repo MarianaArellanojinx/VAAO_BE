@@ -72,8 +72,9 @@ namespace VAAO_BE.Repositories
                 entrega.IdPedido = payload.IdPedido;
                 entrega.EstatusReparto = payload.EstatusReparto;
                 entrega.Observaciones = payload.Observaciones;
-                entrega.HoraInicio = payload.HoraInicio;
-                entrega.HoraRegreso = payload.HoraRegreso;
+                entrega.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
+                entrega.HoraLlegada = payload.HoraLlegada.Value.AddHours(-6);
+                entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
 
                
                 entrega.ImagenConservadorLlegada = payload.ImagenConservadorLlegada;
