@@ -20,7 +20,7 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                payload.AltaRepartidor = DateTime.Now;
+                payload.AltaRepartidor = DateTime.Now.AddHours(-6);
                 payload.BajaRepartidor = null;
 
                 await _context.Repartidores.AddAsync(payload);

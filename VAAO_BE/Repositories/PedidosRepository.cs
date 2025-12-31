@@ -25,8 +25,8 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                payload.FechaPedido = DateTime.Now;
-                payload.FechaProgramada = DateTime.Now;
+                payload.FechaPedido = payload.FechaPedido.AddHours(-6);
+                payload.FechaProgramada = payload.FechaProgramada.AddHours(-6);
                 payload.EstatusPedido = 1;
                 payload.TotalPagar = CalcularTotalPagar(
                     payload.TotalBolsas,

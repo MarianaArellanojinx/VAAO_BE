@@ -12,7 +12,7 @@ namespace VAAO_BE.Entities
 
         public int IdPedido { get; set; }
 
-        public DateTime FechaEntrega { get; set; }
+        public DateTime? FechaEntrega { get; set; }
 
         public DateTime? HoraInicio { get; set; }
 

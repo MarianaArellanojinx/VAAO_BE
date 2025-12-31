@@ -20,7 +20,7 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                payload.FechaAlta = DateTime.Now;
+                payload.FechaAlta = DateTime.Now.AddHours(-6);
                 payload.FechaBaja = null;
 
                 await _context.Clientes.AddAsync(payload);

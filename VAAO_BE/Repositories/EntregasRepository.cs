@@ -18,7 +18,7 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                payload.FechaEntrega = DateTime.Now;
+                payload.FechaEntrega = DateTime.Now.AddHours(-6);
                 payload.HoraInicio = null;
                 payload.HoraRegreso = null;
 
