@@ -2,7 +2,7 @@
 {
     public interface IDashboardRepository
     {
-        public Task<object> GetHistoricoVentas();
-        public Task<object> GetEstatusPedidos();
+        public Task<object> GetHistoricoVentas(DateTime start, DateTime end);
+        public Task<object> GetEstatusPedidos(DateTime start, DateTime end);
     }
 }

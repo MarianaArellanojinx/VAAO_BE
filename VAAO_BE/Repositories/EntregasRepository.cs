@@ -19,7 +19,10 @@ namespace VAAO_BE.Repositories
             try
             {
                 payload.FechaEntrega = DateTime.Now.AddHours(-6);
+                if (payload.HoraInicio is not null)
+                {    
                 payload.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
+                }
                 payload.HoraRegreso = null;
 
                 await _context.Entregas.AddAsync(payload);

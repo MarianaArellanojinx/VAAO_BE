@@ -13,11 +13,13 @@ namespace VAAO_BE.Controllers
         public DashboardController(IDashboardRepository repo) => _repo = repo;
 
         [HttpGet]
-        public async Task<IActionResult> GetEstatusPedidos()
+        public async Task<IActionResult> GetEstatusPedidos(DateTime start, DateTime end)
         {
             try
             {
-                var result = await _repo.GetEstatusPedidos();
+                start = start.AddHours(-6).Date.AddHours(6);
+                end = end.AddHours(-6).Date.AddDays(1).AddHours(6);
+                var result = await _repo.GetEstatusPedidos(start, end);
                 return Ok(new
                 {
                     data = result,
@@ -31,11 +33,13 @@ namespace VAAO_BE.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetHistoricoVentas()
+        public async Task<IActionResult> GetHistoricoVentas(DateTime start, DateTime end)
         {
             try
             {
-                var result = await _repo.GetHistoricoVentas();
+                start = start.AddHours(-6).Date.AddHours(6);
+                end = end.AddHours(-6).Date.AddDays(1).AddHours(6);
+                var result = await _repo.GetHistoricoVentas(start, end);
                 return Ok(new
                 {
                     data = result,

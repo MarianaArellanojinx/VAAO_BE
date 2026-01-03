@@ -18,12 +18,10 @@ namespace VAAO_BE.Repositories
         private readonly int REPARTO = 2;
         private readonly int ENTREGADO = 3;
 
-        public async Task<object> GetEstatusPedidos()
+        public async Task<object> GetEstatusPedidos(DateTime s, DateTime e)
         {
-            var today = DateTime.Now.Date.AddHours(6).AddMinutes(25);
-            var start = today.AddDays(-30);
             var pedidos = await _context.Pedidos
-                .Where(x => x.FechaPedido >= start && x.FechaPedido <= today)
+                .Where(x => x.FechaPedido >= s && x.FechaPedido <= e)
                 .ToListAsync();
             var grouped = pedidos
                 .GroupBy(x => x.FechaPedido.Date)
@@ -65,7 +63,7 @@ namespace VAAO_BE.Repositories
         }
 
 
-        public async Task<object> GetHistoricoVentas()
+        public async Task<object> GetHistoricoVentas(DateTime s, DateTime end)
         {
             try
             {
@@ -95,7 +93,7 @@ namespace VAAO_BE.Repositories
                 var entregas = (await _context
                     .Entregas
                     .AsNoTracking()
-                    .Where(x => x.FechaEntrega >= start && x.FechaEntrega <= today)
+                    .Where(x => x.FechaEntrega >= s && x.FechaEntrega <= end)
                     .ToListAsync()).AsEnumerable();
                 var aux = from e in entregas
                           join p in pedidos
@@ -125,7 +123,7 @@ namespace VAAO_BE.Repositories
                                 select new
                                 {
                                     total = p.TotalPagar,
-                                    entrega = e.FechaEntrega.Value.Date
+                                    entrega = (e.FechaEntrega ?? new DateTime()).Date
                                 }).ToList();
                 return new
                 {
@@ -146,7 +144,7 @@ namespace VAAO_BE.Repositories
                     {
                         labels = aux
                             .OrderBy(x => x.entregado)
-                            .GroupBy(x => x.entregado.Value.Date)
+                            .GroupBy(x => (x.entregado ?? new DateTime()).Date)
                             .Select(x => x.Key.ToString("dd-MM-yyyy"))
                             .ToList(),
                         datasets = new[]
@@ -155,7 +153,7 @@ namespace VAAO_BE.Repositories
                             {
                                 label = "Ventas",
                                 data = aux
-                                        .GroupBy(x => x.entregado.Value.Date)
+                                        .GroupBy(x => (x.entregado ?? new DateTime()).Date)
                                         .OrderBy(x => x.Key)
                                         .Select(g => g.Sum(x => x.bolsas))
                                         .ToList()
