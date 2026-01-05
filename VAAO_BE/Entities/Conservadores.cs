@@ -8,8 +8,6 @@ namespace VAAO_BE.Entities
     {
         public int IdConservador { get; set; }
 
-        public int IdCliente { get; set; }
-
         public string SerialNumber { get; set; } = null!;
 
         public int EstatusConservador { get; set; }

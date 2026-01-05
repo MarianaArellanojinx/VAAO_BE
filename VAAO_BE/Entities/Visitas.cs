@@ -10,8 +10,6 @@ namespace VAAO_BE.Entities
 
         public int IdCliente { get; set; }
 
-        public int IdConservador { get; set; }
-
         public DateTime FechaVisita { get; set; }
 
     }
