@@ -8,6 +8,6 @@ namespace VAAO_BE.Entities
     {
         public int IdMetodoPago { get; set; }
 
-        public string Descripcion { get; set; } = null!;
+        public string DescripcionTipoPago { get; set; } = null!;
     }
 }

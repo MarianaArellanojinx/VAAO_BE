@@ -17,6 +17,7 @@ namespace VAAO_BE.Repositories
 
         public async Task CreateVenta(Ventas payload)
         {
+            payload.FechaRegistro = payload.FechaRegistro.AddHours(-6);
             await _context.Ventas.AddAsync(payload);
             await _context.SaveChangesAsync();
         }
