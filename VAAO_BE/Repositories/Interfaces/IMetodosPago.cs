@@ -4,7 +4,7 @@ namespace VAAO_BE.Repositories.Interfaces
 {
     public interface IMetodosPago
     {
-        public Task CreateMetodoPago(MetodosPagoRepository payload);
-        public Task<List<MetodosPagoRepository>> GetAllMetodosPago();
+        public Task CreateMetodoPago(MetodosPago payload);
+        public Task<List<MetodosPago>> GetAllMetodosPago();
     }
 }

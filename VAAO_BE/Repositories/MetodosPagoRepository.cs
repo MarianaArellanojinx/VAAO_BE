@@ -14,14 +14,20 @@ namespace VAAO_BE.Repositories
         _context = context;
     }
 
-        public Task CreateMetodoPago(MetodosPagoRepository payload)
+
+        public async Task<List<MetodosPago>> GetAllMetodosPago()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var metodospago = await _context.MetodosPago.ToListAsync();
+                return metodospago;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
-        public Task<List<MetodosPagoRepository>> GetAllMetodosPago()
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }
