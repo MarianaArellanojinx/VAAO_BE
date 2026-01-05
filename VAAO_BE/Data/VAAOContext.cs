@@ -19,6 +19,7 @@ namespace VAAO_BE.Data
         public virtual DbSet<Repartidores> Repartidores { get; set; }
         public virtual DbSet<Ventas> Ventas { get; set; }
         public virtual DbSet<MetodosPago> MetodosPago { get; set; }
+        public virtual DbSet<Cliente_Conservador> Cliente_Conservador { get; set; }
 
 
 
@@ -45,6 +46,7 @@ namespace VAAO_BE.Data
             modelBuilder.Entity<Repartidores>(entity => entity.HasKey(k => k.IdRepartidor));
             modelBuilder.Entity<Ventas>(entity => entity.HasKey(k => k.IdVenta));
             modelBuilder.Entity<MetodosPago>(entity => entity.HasKey(k => k.IdMetodoPago));
+            modelBuilder.Entity<Cliente_Conservador>(entity => entity.HasKey(k => k.Id));
         }
     }
 }

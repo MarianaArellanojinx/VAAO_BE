@@ -7,6 +7,6 @@ namespace VAAO_BE.Repositories.Interfaces
     public interface IConservadorRepository
     {
         public Task CreateConservador (Conservadores payload);
-        public Task<List<Conservadores>> GetAllConservadores();
+        public Task<object> GetAllConservadores();
     }
 }
