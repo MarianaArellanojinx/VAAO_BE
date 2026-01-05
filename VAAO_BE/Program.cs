@@ -27,6 +27,7 @@ builder.Services.AddScoped<IPedidoRepository, PedidosRepository>();
 builder.Services.AddScoped<IEntregasRepository, EntregasRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IVentasRepository, VentasRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();  
 var app = builder.Build();
 app.UseCors("all"); 
 app.UseSwagger();

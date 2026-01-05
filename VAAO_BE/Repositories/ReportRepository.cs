@@ -60,10 +60,14 @@ namespace VAAO_BE.Repositories
                 {
                     nombrecliente = x.Key.cliente,
                     totalbolsas = x.Sum(y => y.bolsas),
-                    numsemana = x.Key.semana
-
+                    numsemana = x.Key.semana,
+                    cumplio = x.Sum(y => y.bolsas) >= 30
                 }).ToList();
+            var clientesnocumplidos = auxgrouped
+                .Where(x=> x.cumplio==false)
+                .ToList();
 
+            return clientesnocumplidos;
         }
     }
 }

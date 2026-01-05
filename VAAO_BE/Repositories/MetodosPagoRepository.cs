@@ -14,6 +14,11 @@ namespace VAAO_BE.Repositories
         _context = context;
     }
 
+ 
+        public Task CreateMetodoPago(MetodosPago payload)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<List<MetodosPago>> GetAllMetodosPago()
         {
