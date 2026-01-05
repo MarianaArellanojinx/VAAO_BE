@@ -119,7 +119,7 @@ namespace VAAO_BE.Repositories
                                 on v.IdPedido equals p.IdPedido
                                 join e in entregas
                                 on p.IdPedido equals e.IdPedido
-                                where e.FechaEntrega >= start && e.FechaEntrega <= today
+                                where e.FechaEntrega >= s && e.FechaEntrega <= end
                                 select new
                                 {
                                     total = p.TotalPagar,

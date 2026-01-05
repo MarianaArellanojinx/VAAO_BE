@@ -1,10 +1,5 @@
-﻿
-
-
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VAAO_BE.Entities;
-using VAAO_BE.Repositories;
 using VAAO_BE.Repositories.Interfaces;
 
 namespace VAAO_BE.Controllers
@@ -35,10 +30,10 @@ namespace VAAO_BE.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertUsers(Users payload)
         {
-            await _usersRepository.CreateUser(payload);
+            var id = await _usersRepository.CreateUser(payload);
             return Ok(new
             {
-                data = true,
+                data = id,
                 message = string.Empty,
                 status = true
             });
