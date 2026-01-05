@@ -30,16 +30,22 @@ namespace VAAO_BE.Repositories
                 var clients = await _context.Clientes.ToListAsync();
                 var conservadores = await _context.Conservadores.ToListAsync();
                 var cliente_conservador = await _context.Cliente_Conservador.ToListAsync();
-                var result = from cc in cliente_conservador
-                join c in clients on cc.IdCliente equals c.IdCliente
-                join con in conservadores on cc.IdConservador equals con.IdConservador
-                select new
-                {
-                    Cliente = c.NombreCliente,
-                    Negocio = c.NombreNegocio,
-                    Conservador = con.SerialNumber,
-                    Estatus = con.EstatusConservador
-                };
+                var result = from con in conservadores
+                            join cc in cliente_conservador
+                                on con.IdConservador equals cc.IdConservador into ccJoin
+                            from cc in ccJoin.DefaultIfEmpty() // LEFT JOIN cliente_conservador
+
+                            join c in clients
+                                on cc.IdCliente equals c.IdCliente into cJoin
+                            from c in cJoin.DefaultIfEmpty()   // LEFT JOIN clients
+
+                            select new
+                            {
+                                Negocio = c != null ? c.NombreNegocio : null,
+                                Cliente = c != null ? c.NombreCliente : null,
+                                Serial = con.SerialNumber,
+                                Estatus = con.EstatusConservador == 1 ? "Activo" : "Inactivo",
+                            };
                 return result.ToList();
             }
             catch (Exception ex)
