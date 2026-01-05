@@ -51,6 +51,36 @@ namespace VAAO_BE.Repositories
             }
         }
 
+        public async Task<object?> GetDetailOrder(int pedidoId)
+        {
+            try
+            {
+                var entregas = await _context.Entregas.ToListAsync();
+                var pedidos = await _context.Pedidos.ToListAsync();
+                var result = from e in entregas
+                             join p in pedidos
+                             on e.IdPedido equals p.IdPedido
+                             where p.IdPedido == pedidoId
+                             select new
+                             {
+                                 e.IdEntrega,
+                                 e.IdRepartidor,
+                                 e.IdPedido,
+                                 e.FechaEntrega,
+                                 e.HoraInicio,
+                                 e.HoraLlegada,
+                                 e.EstatusReparto,
+                                 e.ImagenConservadorLlegada,
+                                 e.ImagenConservadorSalida,
+                             };
+                return result?.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
         public async Task<List<Entregas>> GetAllEntregas()
         {
             try

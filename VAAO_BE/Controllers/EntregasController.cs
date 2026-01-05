@@ -15,6 +15,18 @@ namespace VAAO_BE.Controllers
         {
             _entregasRepository = entregasRepository;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDetail(int pedidoId)
+        {
+            var result = await _entregasRepository.GetDetailOrder(pedidoId);
+            return Ok(new
+            {
+                data = result,
+                message = "",
+                status = true
+            });
+        }
     
         [HttpGet("GetAllEntregas")]
         public async Task<IActionResult> GetAllEntregas()
