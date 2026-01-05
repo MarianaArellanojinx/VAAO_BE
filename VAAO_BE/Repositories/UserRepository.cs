@@ -14,12 +14,13 @@ namespace VAAO_BE.Repositories
 
             _context = context;
         }
-        public async Task CreateUser(Users payload)
+        public async Task<int> CreateUser(Users payload)
         {
             try
             {
                 await _context.AddAsync(payload);
                 _context.SaveChanges();
+                return payload.IdUser;
             }
             catch (Exception ex)
             {
