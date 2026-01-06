@@ -27,5 +27,17 @@ namespace VAAO_BE.Controllers
                 status = true
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPedidosRechazados()
+        {
+            var result = await _reportRepository.ObtenerReporteVentaRechazada();
+            return Ok(new
+            {
+                data = result,
+                message = "ok",
+                status = true
+            });
+        }
     }
 }

@@ -69,5 +69,30 @@ namespace VAAO_BE.Repositories
 
             return clientesnocumplidos;
         }
+
+        public async Task<object> ObtenerReporteVentaRechazada()
+        {
+            var pedidos = await _context.Pedidos.ToListAsync();
+            var clientes = await _context.Clientes.ToListAsync();
+            var result = (from p in pedidos
+                         join c in clientes
+                         on p.IdCliente equals c.IdCliente
+                         select new
+                         {
+                             fechaPedido = p.FechaPedido,
+                             cliente = c.NombreCliente.ToUpper(),
+                             bolsas = p.TotalBolsas,
+                             total = p.TotalPagar
+                         }).ToList();
+            return result
+                .GroupBy(x => new { fecha = ObtenerSemanaDelAno(x.fechaPedido), cliente = x.cliente })
+                .Select(x => new
+                {
+                    fechaPedido = x.Key.fecha,
+                    cliente = x.Key.cliente,
+                    totalBolsas = x.Sum(y => y.bolsas),
+                    totalPagar = x.Sum(y => y.total)
+                }).ToList();
+        }
     }
 }

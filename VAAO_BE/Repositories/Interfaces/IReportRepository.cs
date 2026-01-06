@@ -4,6 +4,7 @@
     {
 
         public Task<object> ObtenerReporteVentaPerdida();
+        public Task<object> ObtenerReporteVentaRechazada();
 
     }
 }
