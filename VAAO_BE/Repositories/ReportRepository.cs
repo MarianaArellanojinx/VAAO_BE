@@ -36,37 +36,42 @@ namespace VAAO_BE.Repositories
         public async Task<object> ObtenerReporteVentaPerdida()
         {
             var clientes = await _context.Clientes.ToListAsync();
-            var ventas = await _context.Ventas.ToListAsync();
             var pedidos = await _context.Pedidos.ToListAsync();
-
-            var aux = (from v in ventas
-                       join p in pedidos
-                       on v.IdPedido equals p.IdPedido
-                       join c in clientes
-                       on p.IdCliente equals c.IdCliente
-                       select new
-                       {
-                           bolsas = p.TotalBolsas,
-                           fechaventa = v.FechaRegistro,
-                           cliente = c.NombreCliente
-                       }).ToList();
-
-            var auxgrouped = aux.GroupBy(x => new
-            {
-                semana = ObtenerSemanaDelAno(x.fechaventa),
-                cliente = x.cliente
-            })
+            var ventas = await _context.Ventas.ToListAsync();
+            var aux = (
+                from c in clientes
+                join p in pedidos
+                    on c.IdCliente equals p.IdCliente into cp
+                from p in cp.DefaultIfEmpty()
+                join v in ventas
+                    on p?.IdPedido equals v.IdPedido into pv
+                from v in pv.DefaultIfEmpty()
+                select new
+                {
+                    cliente = c.NombreCliente,
+                    bolsas = p?.TotalBolsas ?? 0,
+                    fechaventa = v?.FechaRegistro
+                }
+            ).ToList();
+            var auxgrouped = aux
+                .GroupBy(x => new
+                {
+                    cliente = x.cliente,
+                    semana = x.fechaventa != null
+                        ? ObtenerSemanaDelAno(x.fechaventa.Value)
+                        : (int?)null
+                })
                 .Select(x => new
                 {
                     nombrecliente = x.Key.cliente,
-                    totalbolsas = x.Sum(y => y.bolsas),
                     numsemana = x.Key.semana,
+                    totalbolsas = x.Sum(y => y.bolsas),
                     cumplio = x.Sum(y => y.bolsas) >= 30
-                }).ToList();
-            var clientesnocumplidos = auxgrouped
-                .Where(x=> x.cumplio==false)
+                })
                 .ToList();
-
+            var clientesnocumplidos = auxgrouped
+                .Where(x => x.totalbolsas < 30)
+                .ToList();
             return clientesnocumplidos;
         }
 
