@@ -18,13 +18,12 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                payload.FechaEntrega = DateTime.Now.AddHours(-6);
                 if (payload.HoraInicio is not null)
                 {    
                 payload.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
                 }
                 payload.HoraRegreso = null;
-
+                payload.FechaEntrega = null;
                 await _context.Entregas.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
@@ -93,7 +92,7 @@ namespace VAAO_BE.Repositories
             }
         }
 
-        public async Task UpdateEntrega(int id, Entregas payload)
+        public async Task UpdateEntrega(int id, Entregas payload, bool entregaFlag = false)
         {
             try
             {
@@ -106,20 +105,19 @@ namespace VAAO_BE.Repositories
                 entrega.EstatusReparto = payload.EstatusReparto;
                 entrega.Observaciones = payload.Observaciones;
 
-                if (payload.HoraInicio is not null)
-                {
-                    entrega.HoraInicio = payload.HoraInicio.Value.AddHours(-6);
-                }
-
-                if (payload.HoraLlegada is not null)
+                if (payload.HoraLlegada is not null && entregaFlag == false)
                 {
                     entrega.HoraLlegada = payload.HoraLlegada.Value.AddHours(-6);
                 }
-
-                if (payload.HoraRegreso is not null)
+                if(payload.FechaEntrega is not null && entregaFlag == true)
                 {
-                    entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
+                    entrega.FechaEntrega = payload.FechaEntrega.Value.AddHours(-6);
                 }
+
+                //if (payload.HoraRegreso is not null)
+                //{
+                //    entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
+                //}
 
                 entrega.ImagenConservadorLlegada = payload.ImagenConservadorLlegada;
                 entrega.ImagenConservadorSalida = payload.ImagenConservadorSalida;

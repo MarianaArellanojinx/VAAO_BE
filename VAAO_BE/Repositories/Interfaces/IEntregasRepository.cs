@@ -6,7 +6,7 @@ namespace VAAO_BE.Repositories.Interfaces
     {
         public Task<object?> GetDetailOrder(int pedidoId);
         public Task CreateEntrega(Entregas payload);
-        public Task UpdateEntrega(int id, Entregas payload);
+        public Task UpdateEntrega(int id, Entregas payload, bool entregaFlag = false);
         public Task DeleteEntrega(int id);
 
         public Task<List<Entregas>> GetAllEntregas();

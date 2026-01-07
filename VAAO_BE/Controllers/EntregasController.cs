@@ -52,8 +52,8 @@ namespace VAAO_BE.Controllers
             });
         }
 
-        [HttpPatch("UpdateEntrega/{id}")]
-        public async Task<IActionResult> UpdateEntrega(int id, [FromBody] Entregas payload)
+        [HttpPatch("UpdateEntrega/{id}/{entrega}")]
+        public async Task<IActionResult> UpdateEntrega(int id, [FromBody] Entregas payload, bool entrega = false)
         {
             await _entregasRepository.UpdateEntrega(id, payload);
             return Ok(new
