@@ -77,6 +77,7 @@ namespace VAAO_BE.Repositories
             var result = (from p in pedidos
                          join c in clientes
                          on p.IdCliente equals c.IdCliente
+                         where p.EstatusPedido == 3
                          select new
                          {
                              fechaPedido = p.FechaPedido,
