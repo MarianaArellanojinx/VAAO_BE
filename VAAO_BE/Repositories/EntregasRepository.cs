@@ -84,7 +84,23 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                return await _context.Entregas.ToListAsync();
+                return await _context
+                    .Entregas
+                    .Select(x => new Entregas
+                    {
+                        IdEntrega = x.IdEntrega,
+                        IdRepartidor = x.IdRepartidor,
+                        IdPedido = x.IdPedido,
+                        FechaEntrega = x.FechaEntrega,
+                        HoraInicio = x.HoraInicio,
+                        HoraLlegada = x.HoraLlegada,
+                        HoraRegreso = x.HoraRegreso,
+                        EstatusReparto = x.EstatusReparto,
+                        Observaciones = x.Observaciones,
+                        ImagenConservadorLlegada = null,
+                        ImagenConservadorSalida = null,
+                        ImagenIncidenciaConservador = null
+                    }).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -111,9 +127,8 @@ namespace VAAO_BE.Repositories
                 }
                 if(payload.FechaEntrega is not null && entregaFlag == true)
                 {
-                    entrega.FechaEntrega = payload.FechaEntrega.Value.AddHours(-6);
+                    entrega.FechaEntrega = DateTime.Now;
                 }
-
                 //if (payload.HoraRegreso is not null)
                 //{
                 //    entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);

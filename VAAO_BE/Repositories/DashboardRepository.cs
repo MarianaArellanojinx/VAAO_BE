@@ -127,18 +127,6 @@ namespace VAAO_BE.Repositories
                                 }).ToList();
                 return new
                 {
-                    cards = new
-                    {
-                        day = auxVentas
-                                .Where(x => x.entrega == today.Date)
-                                .Sum(x => x.total),
-                        week = auxVentas
-                                .Where(x => x.entrega >= monday && x.entrega <= today)
-                                .Sum(x => x.total),
-                        month = auxVentas
-                                .Where(x => x.entrega >= new DateTime(today.Year, today.Month, 1, 0, 0, 0) && x.entrega <= today)
-                                .Sum(x => x.total)
-                    },
                     table = aux.ToList(),
                     chart = new
                     {
@@ -172,6 +160,87 @@ namespace VAAO_BE.Repositories
         {
             int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
             return date.Date.AddDays(-diff);
+        }
+
+        public async Task<object> GetDataCards()
+        {
+            try
+            {
+                var today = DateTime.Now.Date;
+                var nextDay = today.AddDays(1).AddSeconds(-1);
+                //week filter
+                var monday = GetMonday(today).Date;
+                var nextMonday = monday.AddDays(7).AddSeconds(-1);
+                //month filter
+                var firstDayOfMonth = new DateTime(today.Year, today.Month, 1, 0, 0, 0);
+                var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+
+                var pedidos = await _context.Pedidos.AsNoTracking().ToListAsync();
+                var entregas = await _context.Entregas
+                    .Where(x => 
+                        x.FechaEntrega != null && 
+                        x.FechaEntrega >= firstDayOfMonth && 
+                        x.FechaEntrega <= lastDayOfMonth &&
+                        x.EstatusReparto == ENTREGADO
+                    )
+                    .AsNoTracking()
+                    .ToListAsync();
+                var clientes = await _context.Clientes.AsNoTracking().ToListAsync();
+
+                var result = from e in entregas
+                                join p in pedidos
+                                on e.IdPedido equals p.IdPedido
+                                join c in clientes
+                                on p.IdCliente equals c.IdCliente
+                                select new
+                                {
+                                    Cliente = c.NombreCliente,
+                                    Negocio = c.NombreNegocio,
+                                    TotalPagar = p.TotalPagar,
+                                    FechaEntrega = e.FechaEntrega,
+                                    TotalBolsas = p.TotalBolsas,
+                                };
+                return new
+                {
+                    today = result
+                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .Sum(x => x.TotalPagar),
+                    week = result
+                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .Sum(x => x.TotalPagar),
+                    month = result
+                        .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
+                        .Sum(x => x.TotalPagar),
+                    tableToday = result
+                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .GroupBy(x => x.Cliente)
+                        .Select(x => new
+                        {
+                            Cliente = x.Key,
+                            TotalPagar = x.Sum(p => p.TotalPagar)
+                        }).AsEnumerable(),
+                    tableWeek = result
+                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .GroupBy(x => x.Cliente)
+                        .Select(x => new
+                        {
+                            Cliente = x.Key,
+                            TotalPagar = x.Sum(p => p.TotalPagar)
+                        }).AsEnumerable(),
+                    tableMonth = result
+                        .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
+                        .GroupBy(x => x.Cliente)
+                        .Select(x => new
+                        {
+                            Cliente = x.Key,
+                            TotalPagar = x.Sum(p => p.TotalPagar)
+                        }).AsEnumerable()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

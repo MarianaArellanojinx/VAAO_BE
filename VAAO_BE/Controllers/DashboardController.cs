@@ -52,5 +52,24 @@ namespace VAAO_BE.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDataCards()
+        {
+            try
+            {
+                var result = await _repo.GetDataCards();
+                return Ok(new
+                {
+                    data = result,
+                    message = "",
+                    status = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
