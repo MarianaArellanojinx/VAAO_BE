@@ -23,7 +23,7 @@ namespace VAAO_BE.Repositories
             return primerDia.AddDays(diasHastaLunes);
         }
 
-        public  int ObtenerSemanaDelAno(DateTime fecha)
+        public int ObtenerSemanaDelAno(DateTime fecha)
         {
             var cultura = CultureInfo.InvariantCulture;
 
@@ -33,72 +33,136 @@ namespace VAAO_BE.Repositories
                 DayOfWeek.Monday
             );
         }
-        public async Task<object> ObtenerReporteVentaPerdida()
+        public async Task<object> ObtenerReporteVentaPerdida(DateTime startDate, DateTime endDate)
         {
+            startDate = startDate.Date;
+            endDate = endDate.Date;
+
+            // Generamos las semanas válidas dentro del rango
+            var semanasValidas = Enumerable
+                .Range(0, (endDate - startDate).Days + 1)
+                .Select(d => startDate.AddDays(d))
+                .Select(f => ObtenerSemanaDelAno(f))
+                .Distinct()
+                .ToList();
+
             var clientes = await _context.Clientes.ToListAsync();
             var pedidos = await _context.Pedidos.ToListAsync();
-            var ventas = await _context.Ventas.ToListAsync();
-            var aux = (
-                from c in clientes
-                join p in pedidos
-                    on c.IdCliente equals p.IdCliente into cp
-                from p in cp.DefaultIfEmpty()
-                join v in ventas
-                    on p?.IdPedido equals v.IdPedido into pv
-                from v in pv.DefaultIfEmpty()
-                select new
-                {
-                    cliente = c.NombreCliente,
-                    bolsas = p?.TotalBolsas ?? 0,
-                    fechaventa = v?.FechaRegistro
-                }
-            ).ToList();
-            var auxgrouped = aux
+            var ventas = await _context.Ventas
+                .Where(v =>
+                    v.FechaRegistro != null &&
+                    v.FechaRegistro.Date >= startDate &&
+                    v.FechaRegistro.Date <= endDate
+                )
+                .ToListAsync();
+
+            var aux =
+                (
+                    from c in clientes
+                    from semana in semanasValidas                 // cliente × semana
+                    join p in pedidos
+                        on c.IdCliente equals p.IdCliente into cp
+                    from p in cp.DefaultIfEmpty()
+                    join v in ventas
+                        on p?.IdPedido equals v.IdPedido into pv
+                    from v in pv.DefaultIfEmpty()
+                    where v == null || ObtenerSemanaDelAno(v.FechaRegistro) == semana
+                    select new
+                    {
+                        cliente = c.NombreCliente,
+                        semana = semana,
+                        negocio = c.NombreNegocio,
+                        pago = p.TotalPagar,
+                        bolsas = v != null ? p?.TotalBolsas ?? 0 : 0
+                    }
+                )
+                .ToList();
+
+            var resultado = aux
                 .GroupBy(x => new
                 {
-                    cliente = x.cliente,
-                    semana = x.fechaventa != null
-                        ? ObtenerSemanaDelAno(x.fechaventa.Value)
-                        : (int?)null
+                    x.cliente,
+                    x.semana,
+                    x.negocio
                 })
-                .Select(x => new
+                .Select(g => new
                 {
-                    nombrecliente = x.Key.cliente,
-                    numsemana = x.Key.semana,
-                    totalbolsas = x.Sum(y => y.bolsas),
-                    cumplio = x.Sum(y => y.bolsas) >= 30
+                    negocio = g.Key.negocio,
+                    nombrecliente = g.Key.cliente,
+                    numsemana = g.Key.semana,
+                    totalbolsas = g.Sum(x => x.bolsas),
+                    totalPagar = g.Sum(p => p.pago),
+                    cumplio = g.Sum(x => x.bolsas) >= 30
                 })
+                .OrderBy(x => x.numsemana)
                 .ToList();
-            var clientesnocumplidos = auxgrouped
-                .Where(x => x.totalbolsas < 30)
-                .ToList();
-            return clientesnocumplidos;
+
+            return resultado;
         }
 
-        public async Task<object> ObtenerReporteVentaRechazada()
+
+        public async Task<object> ObtenerReporteVentaRechazada(DateTime startDate, DateTime endDate)
         {
-            var pedidos = await _context.Pedidos.ToListAsync();
+            startDate = startDate.Date;
+            endDate = endDate.Date;
+
+            // Semanas válidas dentro del rango
+            var semanasValidas = Enumerable
+                .Range(0, (endDate - startDate).Days + 1)
+                .Select(d => startDate.AddDays(d))
+                .Select(f => ObtenerSemanaDelAno(f))
+                .Distinct()
+                .ToList();
+
+            var pedidos = await _context.Pedidos
+                .Where(p =>
+                    p.EstatusPedido == 3 &&
+                    p.FechaPedido.Date >= startDate &&
+                    p.FechaPedido.Date <= endDate
+                )
+                .ToListAsync();
+
             var clientes = await _context.Clientes.ToListAsync();
-            var result = (from p in pedidos
-                         join c in clientes
-                         on p.IdCliente equals c.IdCliente
-                         where p.EstatusPedido == 3
-                         select new
-                         {
-                             fechaPedido = p.FechaPedido,
-                             cliente = c.NombreCliente.ToUpper(),
-                             bolsas = p.TotalBolsas,
-                             total = p.TotalPagar
-                         }).ToList();
-            return result
-                .GroupBy(x => new { fecha = ObtenerSemanaDelAno(x.fechaPedido), cliente = x.cliente })
-                .Select(x => new
+
+            var aux =
+                (
+                    from c in clientes
+                    from semana in semanasValidas                    // cliente × semana
+                    join p in pedidos
+                        on c.IdCliente equals p.IdCliente into cp
+                    from p in cp.DefaultIfEmpty()
+                    where p == null || ObtenerSemanaDelAno(p.FechaPedido) == semana
+                    select new
+                    {
+                        cliente = c.NombreCliente.ToUpper(),
+                        negocio = c.NombreNegocio,
+                        semana = semana,
+                        bolsas = p != null ? p.TotalBolsas : 0,
+                        total = p != null ? p.TotalPagar : 0
+                    }
+                )
+                .ToList();
+
+            var resultado = aux
+                .GroupBy(x => new
                 {
-                    fechaPedido = x.Key.fecha,
-                    cliente = x.Key.cliente,
-                    totalBolsas = x.Sum(y => y.bolsas),
-                    totalPagar = x.Sum(y => y.total)
-                }).ToList();
+                    x.cliente,
+                    x.negocio,
+                    x.semana
+                })
+                .Select(g => new
+                {
+                    cliente = g.Key.cliente,
+                    negocio = g.Key.negocio,
+                    numsemana = g.Key.semana,
+                    totalBolsas = g.Sum(x => x.bolsas),
+                    totalPagar = g.Sum(x => x.total)
+                })
+                .OrderBy(x => x.numsemana)
+                .ToList();
+
+            return resultado;
         }
+
     }
 }

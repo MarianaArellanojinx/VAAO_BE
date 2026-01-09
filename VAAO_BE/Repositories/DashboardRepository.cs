@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Reflection.Emit;
 using VAAO_BE.Data;
 using VAAO_BE.Repositories.Interfaces;
@@ -213,27 +214,36 @@ namespace VAAO_BE.Repositories
                         .Sum(x => x.TotalPagar),
                     tableToday = result
                         .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
-                        .GroupBy(x => x.Cliente)
+                        .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
                         .Select(x => new
                         {
-                            Cliente = x.Key,
-                            TotalPagar = x.Sum(p => p.TotalPagar)
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Semana = x.Key.semana,
+                            Negocio = x.Key.negocio
                         }).AsEnumerable(),
                     tableWeek = result
                         .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
-                        .GroupBy(x => x.Cliente)
+                        .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
                         .Select(x => new
                         {
-                            Cliente = x.Key,
-                            TotalPagar = x.Sum(p => p.TotalPagar)
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Semana = x.Key.semana,
+                            Negocio = x.Key.negocio
                         }).AsEnumerable(),
                     tableMonth = result
                         .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
-                        .GroupBy(x => x.Cliente)
+                        .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
                         .Select(x => new
                         {
-                            Cliente = x.Key,
-                            TotalPagar = x.Sum(p => p.TotalPagar)
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Semana = x.Key.semana,
+                            Negocio = x.Key.negocio
                         }).AsEnumerable()
                 };
             }
@@ -241,6 +251,16 @@ namespace VAAO_BE.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        public  int ObtenerSemanaDelAno(DateTime fecha)
+        {
+            var cultura = CultureInfo.InvariantCulture;
+
+            return cultura.Calendar.GetWeekOfYear(
+                fecha,
+                CalendarWeekRule.FirstFourDayWeek,
+                DayOfWeek.Monday
+            );
         }
     }
 }

@@ -3,8 +3,8 @@
     public interface IReportRepository
     {
 
-        public Task<object> ObtenerReporteVentaPerdida();
-        public Task<object> ObtenerReporteVentaRechazada();
+        public Task<object> ObtenerReporteVentaPerdida(DateTime startDate, DateTime endDate);
+        public Task<object> ObtenerReporteVentaRechazada(DateTime startDate, DateTime endDate);
 
     }
 }
