@@ -57,26 +57,27 @@ namespace VAAO_BE.Repositories
                 .ToListAsync();
 
             var aux =
-                (
-                    from c in clientes
-                    from semana in semanasValidas                 // cliente × semana
-                    join p in pedidos
-                        on c.IdCliente equals p.IdCliente into cp
-                    from p in cp.DefaultIfEmpty()
-                    join v in ventas
-                        on p?.IdPedido equals v.IdPedido into pv
-                    from v in pv.DefaultIfEmpty()
-                    where v == null || ObtenerSemanaDelAno(v.FechaRegistro) == semana
-                    select new
-                    {
-                        cliente = c.NombreCliente,
-                        semana = semana,
-                        negocio = c.NombreNegocio,
-                        pago = p.TotalPagar,
-                        bolsas = v != null ? p?.TotalBolsas ?? 0 : 0
-                    }
-                )
-                .ToList();
+            (
+                from c in clientes
+                from semana in semanasValidas
+                join p in pedidos
+                    on c.IdCliente equals p.IdCliente into cp
+                from p in cp.DefaultIfEmpty()
+                join v in ventas
+                    on p?.IdPedido equals v.IdPedido into pv
+                from v in pv.DefaultIfEmpty()
+                where v == null || ObtenerSemanaDelAno(v.FechaRegistro) == semana
+                select new
+                {
+                    cliente = c.NombreCliente,
+                    semana = semana,
+                    negocio = c.NombreNegocio,
+                    pago = p?.TotalPagar ?? 0,                 // ✅ FIX
+                    bolsas = p?.TotalBolsas ?? 0
+                }
+            )
+            .ToList();
+
 
             var resultado = aux
                 .GroupBy(x => new

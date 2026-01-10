@@ -124,20 +124,17 @@ namespace VAAO_BE.Repositories
                 if (payload.HoraLlegada is not null && entregaFlag == false)
                 {
                     entrega.HoraLlegada = payload.HoraLlegada.Value.AddHours(-6);
+                    entrega.ImagenConservadorLlegada = payload.ImagenConservadorLlegada;
                 }
                 if(payload.FechaEntrega is not null && entregaFlag == true)
                 {
-                    entrega.FechaEntrega = DateTime.Now;
+                    entrega.FechaEntrega = DateTime.Now.AddHours(-6);
+                    entrega.ImagenConservadorSalida = payload.ImagenConservadorSalida;
                 }
                 //if (payload.HoraRegreso is not null)
                 //{
                 //    entrega.HoraRegreso = payload.HoraRegreso.Value.AddHours(-6);
                 //}
-
-                entrega.ImagenConservadorLlegada = payload.ImagenConservadorLlegada;
-                entrega.ImagenConservadorSalida = payload.ImagenConservadorSalida;
-                entrega.ImagenIncidenciaConservador = payload.ImagenIncidenciaConservador;
-
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

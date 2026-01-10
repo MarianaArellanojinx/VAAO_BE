@@ -55,13 +55,20 @@ namespace VAAO_BE.Controllers
         [HttpPatch("UpdateEntrega/{id}/{entrega}")]
         public async Task<IActionResult> UpdateEntrega(int id, [FromBody] Entregas payload, bool entrega = false)
         {
-            await _entregasRepository.UpdateEntrega(id, payload, entrega);
-            return Ok(new
+            try
             {
-                data = true,
-                message = string.Empty,
-                status = true
-            });
+                await _entregasRepository.UpdateEntrega(id, payload, entrega);
+                return Ok(new
+                {
+                    data = true,
+                    message = string.Empty,
+                    status = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpDelete("DeleteEntrega/{id}")]

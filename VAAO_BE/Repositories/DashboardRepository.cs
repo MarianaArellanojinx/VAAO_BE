@@ -15,8 +15,7 @@ namespace VAAO_BE.Repositories
         private readonly int APROBADO = 2;
         private readonly int CANCELADO = 3;
 
-        private readonly int REPROGRAMADO = 1;
-        private readonly int REPARTO = 2;
+        
         private readonly int ENTREGADO = 3;
 
         public async Task<object> GetEstatusPedidos(DateTime s, DateTime e)
@@ -133,8 +132,8 @@ namespace VAAO_BE.Repositories
                     {
                         labels = aux
                             .OrderBy(x => x.entregado)
-                            .GroupBy(x => (x.entregado ?? new DateTime()).Date)
-                            .Select(x => x.Key.ToString("dd-MM-yyyy"))
+                            .GroupBy(x => (x.entregado))
+                            .Select(x => x.Key.Value.ToString("dd-MM-yyyy"))
                             .ToList(),
                         datasets = new[]
                         {
@@ -142,7 +141,7 @@ namespace VAAO_BE.Repositories
                             {
                                 label = "Ventas",
                                 data = aux
-                                        .GroupBy(x => (x.entregado ?? new DateTime()).Date)
+                                        .GroupBy(x => (x.entregado))
                                         .OrderBy(x => x.Key)
                                         .Select(g => g.Sum(x => x.bolsas))
                                         .ToList()
