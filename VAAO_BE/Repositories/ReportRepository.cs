@@ -72,7 +72,7 @@ namespace VAAO_BE.Repositories
                     cliente = c.NombreCliente,
                     semana = semana,
                     negocio = c.NombreNegocio,
-                    pago = p?.TotalPagar ?? 0,                 // ✅ FIX
+                    pago = p?.TotalPagar ?? 0,
                     bolsas = p?.TotalBolsas ?? 0
                 }
             )

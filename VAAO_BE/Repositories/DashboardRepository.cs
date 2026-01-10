@@ -15,7 +15,7 @@ namespace VAAO_BE.Repositories
         private readonly int APROBADO = 2;
         private readonly int CANCELADO = 3;
 
-        
+
         private readonly int ENTREGADO = 3;
 
         public async Task<object> GetEstatusPedidos(DateTime s, DateTime e)
@@ -186,14 +186,21 @@ namespace VAAO_BE.Repositories
                     .AsNoTracking()
                     .ToListAsync();
                 var clientes = await _context.Clientes.AsNoTracking().ToListAsync();
+                var ventas = await _context.Ventas.AsNoTracking().ToListAsync();
+                var metodos = await _context.MetodosPago.AsNoTracking().ToListAsync();
 
                 var result = from e in entregas
                                 join p in pedidos
                                 on e.IdPedido equals p.IdPedido
                                 join c in clientes
                                 on p.IdCliente equals c.IdCliente
+                                join v in ventas
+                                on p.IdPedido equals v.IdPedido
+                                join m in metodos
+                                on v.IdMetodoPago equals m.IdMetodoPago
                                 select new
                                 {
+                                    Metodo = m.Descripcion,
                                     Cliente = c.NombreCliente,
                                     Negocio = c.NombreNegocio,
                                     TotalPagar = p.TotalPagar,
@@ -222,6 +229,25 @@ namespace VAAO_BE.Repositories
                             Semana = x.Key.semana,
                             Negocio = x.Key.negocio
                         }).AsEnumerable(),
+                    tableTodayDetail = result
+                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .GroupBy(x => new 
+                            {
+                                cliente = x.Cliente, 
+                                negocio = x.Negocio, 
+                                date = x.FechaEntrega.Value,
+                                metodo = x.Metodo
+                            }
+                        )
+                        .Select(x => new
+                        {
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Dia = x.Key.date,
+                            Negocio = x.Key.negocio,
+                            Metodo = x.Key.metodo
+                        }).AsEnumerable(),
                     tableWeek = result
                         .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
                         .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
@@ -233,6 +259,25 @@ namespace VAAO_BE.Repositories
                             Semana = x.Key.semana,
                             Negocio = x.Key.negocio
                         }).AsEnumerable(),
+                    tableWeekDetail = result
+                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .GroupBy(x => new 
+                            {
+                                cliente = x.Cliente, 
+                                negocio = x.Negocio, 
+                                date = x.FechaEntrega.Value,
+                                metodo = x.Metodo
+                            }
+                        )
+                        .Select(x => new
+                        {
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Dia = x.Key.date,
+                            Negocio = x.Key.negocio,
+                            Metodo = x.Key.metodo
+                        }).AsEnumerable(),
                     tableMonth = result
                         .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
                         .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
@@ -243,6 +288,25 @@ namespace VAAO_BE.Repositories
                             TotalBolsas = x.Sum(p => p.TotalBolsas),
                             Semana = x.Key.semana,
                             Negocio = x.Key.negocio
+                        }).AsEnumerable(),
+                    tableMonthDetail = result
+                        .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
+                        .GroupBy(x => new 
+                            {
+                                cliente = x.Cliente, 
+                                negocio = x.Negocio, 
+                                date = x.FechaEntrega.Value,
+                                metodo = x.Metodo
+                            }
+                        )
+                        .Select(x => new
+                        {
+                            Cliente = x.Key.cliente,
+                            TotalPagar = x.Sum(p => p.TotalPagar),
+                            TotalBolsas = x.Sum(p => p.TotalBolsas),
+                            Dia = x.Key.date,
+                            Negocio = x.Key.negocio,
+                            Metodo = x.Key.metodo
                         }).AsEnumerable()
                 };
             }
