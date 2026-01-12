@@ -50,13 +50,33 @@ namespace VAAO_BE.Repositories
             }
         }
 
-        public async Task<List<Clientes>> GetAllClientes()
+        public async Task<object> GetAllClientes()
         {
 
             try
             {
+                var users = await _context.Users.ToListAsync();
                 var clientes = await _context.Clientes.ToListAsync();
-                return clientes;
+                var result = (from u in users
+                             join c in clientes
+                             on u.IdUser equals c.IdUser
+                             select new
+                             {
+                                 c.IdUser,
+                                 c.Conservadores,
+                                 c.IdCliente,
+                                 c.NombreCliente,
+                                 c.NombreNegocio,
+                                 c.Calle,
+                                 c.Colonia,
+                                 c.NumeroExterior,
+                                 c.Cp,
+                                 c.FechaAlta,
+                                 c.Telefono,
+                                 u.UserName,
+                                 u.UserPassword
+                             }).ToList();
+                return result;
             }
             catch (Exception ex)
             {

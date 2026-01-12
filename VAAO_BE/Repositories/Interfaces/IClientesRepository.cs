@@ -10,6 +10,6 @@ namespace VAAO_BE.Repositories.Interfaces
         public Task UpdateCliente(int id, Clientes payload);
         public Task DeleteCliente(int id);
 
-        public Task<List<Clientes>> GetAllClientes();
+        public Task<object> GetAllClientes();
     }
 }
