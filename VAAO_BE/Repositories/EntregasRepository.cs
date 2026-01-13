@@ -24,7 +24,6 @@ namespace VAAO_BE.Repositories
                 }
                 payload.HoraRegreso = null;
                 payload.FechaEntrega = null;
-                payload.IdRepartidor = null;
                 await _context.Entregas.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
