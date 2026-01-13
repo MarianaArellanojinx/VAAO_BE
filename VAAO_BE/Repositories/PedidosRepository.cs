@@ -60,7 +60,7 @@ namespace VAAO_BE.Repositories
             }
         }
 
-        public async Task<List<Pedidos>> GetAllPedidos()
+        public async Task<object> GetAllPedidos()
         {
             try
             {
@@ -68,7 +68,7 @@ namespace VAAO_BE.Repositories
                     from p in _context.Pedidos
                     join c in _context.Clientes
                         on p.IdCliente equals c.IdCliente
-                    select new Pedidos
+                    select new 
                     {
                         IdPedido = p.IdPedido,
                         IdCliente = p.IdCliente,         
@@ -80,7 +80,8 @@ namespace VAAO_BE.Repositories
                         EstatusPedido = p.EstatusPedido,
                         Observaciones = p.Observaciones,
                         IdRepartidor = p.IdRepartidor,
-                        NombreCliente = c.NombreNegocio
+                        NombreCliente = c.NombreNegocio,
+                        Ubicacion = c.Ubicacion
                     }
                 ).ToListAsync();
 
