@@ -55,7 +55,33 @@ namespace VAAO_BE.Repositories
 
             try
             {
+                var usuarios = await _context.Users.ToListAsync();
                 var clientes = await _context.Clientes.ToListAsync();
+
+                var result = from u in usuarios
+                             join c in clientes
+                             on u.IdUser equals c.IdUser
+                             select new
+                             {
+                                Calle = c.Calle,
+                                Colonia = c.Colonia,
+                                Conservadores = c.Conservadores,
+                                Cp = c.Cp,
+                                FechaAlta = c.FechaAlta,
+                                FechaBaja = c.FechaBaja,
+                                IdCliente = c.IdCliente,
+                                NombreCliente = c.NombreCliente,
+                                NombreNegocio = c.NombreNegocio,
+                                NumeroExterior = c.NumeroExterior,
+                                Telefono = c.Telefono,
+                                Ubicacion = c.Ubicacion,
+                                IdUser = u.IdUser,
+                                IsActive = u.IsActive,
+                                Rol = u.Rol,
+                                UserName = u.UserName,
+                                UserPassowrd = u.UserPassword
+                             };
+
                 return clientes;
             }
             catch (Exception ex)
@@ -71,7 +97,7 @@ namespace VAAO_BE.Repositories
                 var cliente =  _context.Clientes.Find(id);
                 if (cliente == null) throw new Exception("cliente no encontrado");
 
-
+                cliente.Ubicacion = payload.Ubicacion;
                 cliente.NombreNegocio = payload.NombreNegocio;
                 cliente.NombreCliente = payload.NombreCliente;
                 cliente.Calle = payload.Calle;
