@@ -60,7 +60,7 @@ namespace VAAO_BE.Repositories
             }
         }
 
-        public async Task<object> GetAllPedidos()
+        public async Task<List<PedidoDetailDto>> GetAllPedidos()
         {
             try
             {
@@ -68,7 +68,7 @@ namespace VAAO_BE.Repositories
                     from p in _context.Pedidos
                     join c in _context.Clientes
                         on p.IdCliente equals c.IdCliente
-                    select new 
+                    select new PedidoDetailDto
                     {
                         IdPedido = p.IdPedido,
                         IdCliente = p.IdCliente,         

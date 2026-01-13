@@ -48,6 +48,7 @@ namespace VAAO_BE.Controllers
         public async Task<IActionResult> GetPedidosFiltrados(DateTime start, DateTime end)
         {
             var result = await _pedidoRepository.GetAllPedidos();
+            if(result is null) throw new Exception();
             return Ok(new
             {
                 data = result.Where(x => x.FechaPedido >= start.Date && x.FechaPedido <= end.Date.AddDays(1)).ToList(),

@@ -10,6 +10,6 @@ namespace VAAO_BE.Repositories.Interfaces
         public Task UpdatePedido(int id, Pedidos payload);
         public Task DeletePedido(int id);
 
-        public Task<object> GetAllPedidos();
+        public Task<List<PedidoDetailDto>> GetAllPedidos();
     }
 }
