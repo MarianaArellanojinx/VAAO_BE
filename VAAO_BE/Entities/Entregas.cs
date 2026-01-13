@@ -8,7 +8,7 @@ namespace VAAO_BE.Entities
     {
         public int IdEntrega { get; set; }
 
-        public int IdRepartidor { get; set; }
+        public int? IdRepartidor { get; set; }
 
         public int IdPedido { get; set; }
 
