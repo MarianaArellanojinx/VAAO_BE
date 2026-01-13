@@ -82,7 +82,7 @@ namespace VAAO_BE.Repositories
                                 UserPassowrd = u.UserPassword
                              };
 
-                return clientes;
+                return result;
             }
             catch (Exception ex)
             {
