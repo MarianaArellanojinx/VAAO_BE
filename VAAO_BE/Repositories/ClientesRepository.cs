@@ -50,7 +50,7 @@ namespace VAAO_BE.Repositories
             }
         }
 
-        public async Task<List<Clientes>> GetAllClientes()
+        public async Task<object> GetAllClientes()
         {
 
             try
