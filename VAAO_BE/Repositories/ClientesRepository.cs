@@ -37,10 +37,16 @@ namespace VAAO_BE.Repositories
         {
             try
             {
+                var conservadores = await _context.Cliente_Conservador.Where(x => x.IdCliente == id).ToListAsync();
+                foreach (var c in conservadores)
+                {
+                    _context.Cliente_Conservador.Remove(c);
+                }
+                await _context.SaveChangesAsync();
                 var cliente = _context.Clientes.Find(id);
                 if (cliente is null) throw new Exception("cliente no encontrado");
-                
-                 _context.Clientes.Remove(cliente);
+
+                _context.Clientes.Remove(cliente);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
