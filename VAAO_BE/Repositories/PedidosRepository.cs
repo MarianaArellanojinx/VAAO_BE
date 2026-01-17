@@ -75,7 +75,7 @@ namespace VAAO_BE.Repositories
                         FechaPedido = p.FechaPedido,
                         FechaProgramada = p.FechaProgramada,
                         TotalBolsas = p.TotalBolsas,
-                        PrecioUnitario = p.PrecioUnitario,
+                        PrecioUnitario = c.PrecioHielo ?? 0.0,
                         TotalPagar = p.TotalPagar,
                         EstatusPedido = p.EstatusPedido,
                         Observaciones = p.Observaciones,
