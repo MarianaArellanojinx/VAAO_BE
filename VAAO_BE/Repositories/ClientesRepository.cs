@@ -85,7 +85,9 @@ namespace VAAO_BE.Repositories
                                 IsActive = u.IsActive,
                                 Rol = u.Rol,
                                 UserName = u.UserName,
-                                UserPassowrd = u.UserPassword
+                                UserPassowrd = u.UserPassword,
+                                EsPlanta = c.EsPlanta,
+                                Precio = c.PrecioHielo
                              };
 
                 return result;

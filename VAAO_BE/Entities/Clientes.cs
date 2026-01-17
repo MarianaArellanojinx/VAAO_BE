@@ -28,5 +28,7 @@ namespace VAAO_BE.Entities
         public DateTime? FechaBaja { get; set; }
         public int? IdUser { get; set; }
         public string? Ubicacion { get; set; }
+        public bool? EsPlanta { get; set; }
+        public double? PrecioHielo { get; set; }
     }
 }

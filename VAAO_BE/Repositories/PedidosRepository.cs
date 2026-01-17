@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VAAO_BE.Data;
 using VAAO_BE.Entities;
 using VAAO_BE.Repositories.Interfaces;
@@ -15,9 +16,11 @@ namespace VAAO_BE.Repositories
         }
 
 
-        private double CalcularTotalPagar(int totalBolsas, double precioUnitario)
+        private async Task<double> CalcularTotalPagar(int totalBolsas, int idCliente)
         {
-            return totalBolsas * precioUnitario;
+            var cliente = await _context.Clientes.FindAsync(idCliente);
+            if(cliente is null) return 25.0;
+            return totalBolsas * (cliente?.PrecioHielo ?? 0.0);
         }
 
 
@@ -29,10 +32,7 @@ namespace VAAO_BE.Repositories
                 payload.FechaPedido = payload.FechaPedido.AddHours(-6);
                 payload.FechaProgramada = payload.FechaProgramada.AddHours(-6);
                 payload.EstatusPedido = 1;
-                payload.TotalPagar = CalcularTotalPagar(
-                    payload.TotalBolsas,
-                    payload.PrecioUnitario
-                );
+                payload.TotalPagar = await CalcularTotalPagar(payload.TotalBolsas, payload.IdCliente);
                 await _context.Pedidos.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
@@ -108,9 +108,9 @@ namespace VAAO_BE.Repositories
                 pedido.PrecioUnitario = payload.PrecioUnitario;
 
                
-                pedido.TotalPagar = CalcularTotalPagar(
+                pedido.TotalPagar = await CalcularTotalPagar(
                     payload.TotalBolsas,
-                    payload.PrecioUnitario
+                    payload.IdCliente
                 );
 
                 pedido.EstatusPedido = payload.EstatusPedido;
