@@ -36,6 +36,7 @@ namespace VAAO_BE.Repositories
                         Fecha = v != null ? v.FechaVisita : (DateTime?)null,
                         Evidencia = v != null ? v.Evidencia : null,
                         Cliente = c.NombreNegocio,
+                        IdCliente = c.IdCliente,
                         Encargado = u != null ? u.UserName : null
                     }
                 ).ToListAsync();
