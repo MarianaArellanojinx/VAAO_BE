@@ -11,6 +11,8 @@ namespace VAAO_BE.Entities
         public int IdCliente { get; set; }
 
         public DateTime FechaVisita { get; set; }
+        public int IdUsuario { get; set; }
+        public string Evidencia { get; set; }
 
     }
 }
