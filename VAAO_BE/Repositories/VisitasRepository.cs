@@ -42,6 +42,7 @@ namespace VAAO_BE.Repositories
         {
             try
             {
+                payload.FechaVisita = DateTime.Now;
                 await _context.Visitas.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
