@@ -15,22 +15,32 @@ namespace VAAO_BE.Repositories
         {
             try
             {
-                var clients = await _context.Clientes.ToListAsync();
-                var visitas = await _context.Visitas.ToListAsync();
-                var users = await _context.Users.ToListAsync();
-                var result = from v in visitas
-                             join c in clients
-                             on v.IdCliente equals c.IdCliente
-                             join u in users
-                             on v.IdUsuario equals u.IdUser
-                             select new
-                             {
-                                 Fecha = v.FechaVisita,
-                                 Evidencia = v.Evidencia,
-                                 Cliente = c.NombreNegocio,
-                                 Encargado = u.UserName
-                             };
-                return result.ToList();
+                var start = day.Date.AddHours(6).AddMinutes(25);
+                var end = start.AddDays(1).AddSeconds(-1);
+
+                var result = await
+                (
+                    from c in _context.Clientes
+
+                    join v in _context.Visitas
+                        .Where(x => x.FechaVisita >= start && x.FechaVisita <= end)
+                        on c.IdCliente equals v.IdCliente into visitasGroup
+                    from v in visitasGroup.DefaultIfEmpty()
+
+                    join u in _context.Users
+                        on v.IdUsuario equals u.IdUser into usersGroup
+                    from u in usersGroup.DefaultIfEmpty()
+
+                    select new
+                    {
+                        Fecha = v != null ? v.FechaVisita : (DateTime?)null,
+                        Evidencia = v != null ? v.Evidencia : null,
+                        Cliente = c.NombreNegocio,
+                        Encargado = u != null ? u.UserName : null
+                    }
+                ).ToListAsync();
+
+                return result;
             }
             catch (Exception ex)
             {
