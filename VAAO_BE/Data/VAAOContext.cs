@@ -27,9 +27,9 @@ namespace VAAO_BE.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("Server=db-mysql-nyc3-54924-do-user-31175109-0.l.db.ondigitalocean.com;Port=25060;Database=VAAO;User=doadmin;Password=AVNS_dhvju98ctTc6Q_kfdR5;SslMode=None;",
+                optionsBuilder.UseMySql("Server=db-mysql-nyc3-54924-do-user-31175109-0.l.db.ondigitalocean.com;Port=25060;Database=VAAO;User=doadmin;Password=AVNS_dhvju98ctTc6Q_kfdR5;SslMode=Required;",
                 ServerVersion.AutoDetect(
-                    "Server=db-mysql-nyc3-54924-do-user-31175109-0.l.db.ondigitalocean.com;Port=25060;Database=VAAO;User=doadmin;Password=AVNS_dhvju98ctTc6Q_kfdR5;SslMode=None;"
+                    "Server=db-mysql-nyc3-54924-do-user-31175109-0.l.db.ondigitalocean.com;Port=25060;Database=VAAO;User=doadmin;Password=AVNS_dhvju98ctTc6Q_kfdR5;SslMode=Required;"
                 )
             );
             }
