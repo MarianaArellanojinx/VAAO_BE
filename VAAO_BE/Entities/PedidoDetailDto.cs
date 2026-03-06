@@ -25,5 +25,6 @@ namespace VAAO_BE.Entities
         public string NombreCliente { get; set; } = string.Empty;
 
         public string? Ubicacion { get; set; }
+        public string? ObservacionRepartidor { get; set; }
     }
 }
