@@ -54,11 +54,16 @@ namespace VAAO_BE.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDataCards()
+        public async Task<IActionResult> GetDataCards(DateTime? start, DateTime? end)
         {
             try
             {
-                var result = await _repo.GetDataCards();
+                if (start.HasValue && end.HasValue && start.Value.Date > end.Value.Date)
+                {
+                    return BadRequest("El rango de fechas es inválido: start debe ser menor o igual a end.");
+                }
+
+                var result = await _repo.GetDataCards(start, end);
                 return Ok(new
                 {
                     data = result,

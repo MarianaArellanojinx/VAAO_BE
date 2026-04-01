@@ -162,25 +162,55 @@ namespace VAAO_BE.Repositories
             return date.Date.AddDays(-diff);
         }
 
-        public async Task<object> GetDataCards()
+        public async Task<object> GetDataCards(DateTime? start, DateTime? end)
         {
             try
             {
-                var today = DateTime.Now.Date;
-                var nextDay = today.AddDays(1).AddSeconds(-1);
-                //week filter
-                var monday = GetMonday(today).Date;
-                var nextMonday = monday.AddDays(7).AddSeconds(-1);
-                //month filter
-                var firstDayOfMonth = new DateTime(today.Year, today.Month, 1, 0, 0, 0);
+                var todayStart = DateTime.Now.Date;
+                var todayEnd = todayStart.AddDays(1).AddSeconds(-1);
+
+                var currentMonday = GetMonday(todayStart).Date;
+                var currentWeekEnd = currentMonday.AddDays(7).AddSeconds(-1);
+
+                var weekStart = start?.Date ?? currentMonday;
+                var weekEndDate = (end ?? start)?.Date ?? currentWeekEnd.Date;
+                var weekEnd = weekEndDate.AddDays(1).AddSeconds(-1);
+
+                if (weekEnd < weekStart)
+                {
+                    throw new ArgumentException("El rango de fechas es inválido: start debe ser menor o igual a end.");
+                }
+
+                var monthReference = start?.Date ?? todayStart;
+                var firstDayOfMonth = new DateTime(monthReference.Year, monthReference.Month, 1, 0, 0, 0);
                 var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+
+                var queryStart = todayStart;
+                if (weekStart < queryStart)
+                {
+                    queryStart = weekStart;
+                }
+                if (firstDayOfMonth < queryStart)
+                {
+                    queryStart = firstDayOfMonth;
+                }
+
+                var queryEnd = todayEnd;
+                if (weekEnd > queryEnd)
+                {
+                    queryEnd = weekEnd;
+                }
+                if (lastDayOfMonth > queryEnd)
+                {
+                    queryEnd = lastDayOfMonth;
+                }
 
                 var pedidos = await _context.Pedidos.AsNoTracking().ToListAsync();
                 var entregas = await _context.Entregas
                     .Where(x => 
                         x.FechaEntrega != null && 
-                        x.FechaEntrega >= firstDayOfMonth && 
-                        x.FechaEntrega <= lastDayOfMonth &&
+                        x.FechaEntrega >= queryStart && 
+                        x.FechaEntrega <= queryEnd &&
                         x.EstatusReparto == ENTREGADO
                     )
                     .AsNoTracking()
@@ -210,16 +240,16 @@ namespace VAAO_BE.Repositories
                 return new
                 {
                     today = result
-                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .Where(x => x.FechaEntrega >= todayStart && x.FechaEntrega <= todayEnd)
                         .Sum(x => x.TotalPagar),
                     week = result
-                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .Where(x => x.FechaEntrega >= weekStart && x.FechaEntrega <= weekEnd)
                         .Sum(x => x.TotalPagar),
                     month = result
                         .Where(x => x.FechaEntrega >= firstDayOfMonth && x.FechaEntrega <= lastDayOfMonth)
                         .Sum(x => x.TotalPagar),
                     tableToday = result
-                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .Where(x => x.FechaEntrega >= todayStart && x.FechaEntrega <= todayEnd)
                         .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
                         .Select(x => new
                         {
@@ -230,7 +260,7 @@ namespace VAAO_BE.Repositories
                             Negocio = x.Key.negocio
                         }).AsEnumerable(),
                     tableTodayDetail = result
-                        .Where(x => x.FechaEntrega >= today && x.FechaEntrega <= nextDay)
+                        .Where(x => x.FechaEntrega >= todayStart && x.FechaEntrega <= todayEnd)
                         .GroupBy(x => new 
                             {
                                 cliente = x.Cliente, 
@@ -249,7 +279,7 @@ namespace VAAO_BE.Repositories
                             Metodo = x.Key.metodo
                         }).AsEnumerable(),
                     tableWeek = result
-                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .Where(x => x.FechaEntrega >= weekStart && x.FechaEntrega <= weekEnd)
                         .GroupBy(x => new {cliente = x.Cliente, negocio = x.Negocio, semana = ObtenerSemanaDelAno(x.FechaEntrega.Value)})
                         .Select(x => new
                         {
@@ -260,7 +290,7 @@ namespace VAAO_BE.Repositories
                             Negocio = x.Key.negocio
                         }).AsEnumerable(),
                     tableWeekDetail = result
-                        .Where(x => x.FechaEntrega >= monday && x.FechaEntrega <= nextMonday)
+                        .Where(x => x.FechaEntrega >= weekStart && x.FechaEntrega <= weekEnd)
                         .GroupBy(x => new 
                             {
                                 cliente = x.Cliente, 
