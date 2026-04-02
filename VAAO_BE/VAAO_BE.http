@@ -4,3 +4,15 @@ GET {{VAAO_BE_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{VAAO_BE_HostAddress}}/api/AzureOpenAi/Chat
+Content-Type: application/json
+
+{
+  "prompt": "Dame un resumen corto de mi negocio.",
+  "systemPrompt": "Responde en espanol de forma clara y breve.",
+  "temperature": 0.7,
+  "maxTokens": 250
+}
+
+###

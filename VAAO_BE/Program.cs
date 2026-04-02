@@ -1,6 +1,8 @@
 using VAAO_BE.Data;
+using VAAO_BE.Options;
 using VAAO_BE.Repositories;
 using VAAO_BE.Repositories.Interfaces;
+using VAAO_BE.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<VAAOContext>();
+builder.Services.Configure<AzureOpenAiOptions>(builder.Configuration.GetSection(AzureOpenAiOptions.SectionName));
+builder.Services.AddHttpClient<IAzureOpenAiService, AzureOpenAiService>();
 builder.Services.AddScoped<IUsersRepository, UserRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
 builder.Services.AddScoped<IRepartidoresRepository, RepartidoresRepository>();
