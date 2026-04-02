@@ -16,3 +16,15 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{VAAO_BE_HostAddress}}/api/AzureOpenAi/ResumenVentas
+Content-Type: application/json
+
+{
+  "fechaInicio": "2026-04-01",
+  "fechaFin": "2026-04-02",
+  "cliente": "Oxxo",
+  "pregunta": "Dame un resumen de las ventas del rango para este cliente e indica oportunidades o hallazgos."
+}
+
+###
