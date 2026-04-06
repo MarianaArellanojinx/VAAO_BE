@@ -17,11 +17,25 @@ namespace VAAO_BE.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetVentasPerdidas(DateTime start, DateTime end)
+        public async Task<IActionResult> GetVentasPerdidas(DateTime start, DateTime end, int metaBolsas = 30)
         {
             start = start.AddHours(-6);
             end = end.AddHours(-6);
-            var result = await  _reportRepository.ObtenerReporteVentaPerdida(start, end);
+            var result = await _reportRepository.ObtenerReporteVentaPerdida(start, end, metaBolsas);
+            return Ok(new
+            {
+                data = result,
+                message = "",
+                status = true
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetVentasPerdidasResumen(DateTime start, DateTime end, int metaBolsas = 30)
+        {
+            start = start.AddHours(-6);
+            end = end.AddHours(-6);
+            var result = await _reportRepository.ObtenerReporteVentaPerdidaResumen(start, end, metaBolsas);
             return Ok(new
             {
                 data = result,
