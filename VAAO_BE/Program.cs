@@ -24,6 +24,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<VAAOContext>();
 builder.Services.Configure<AzureOpenAiOptions>(builder.Configuration.GetSection(AzureOpenAiOptions.SectionName));
 builder.Services.AddHttpClient<IAzureOpenAiService, AzureOpenAiService>();
+builder.Services.AddSingleton<IAiConversationMemory, InMemoryAiConversationMemory>();
+builder.Services.AddScoped<ISalesAiAssistantService, SalesAiAssistantService>();
 builder.Services.AddScoped<IUsersRepository, UserRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
 builder.Services.AddScoped<IRepartidoresRepository, RepartidoresRepository>();

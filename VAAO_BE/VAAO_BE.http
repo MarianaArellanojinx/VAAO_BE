@@ -28,3 +28,25 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{VAAO_BE_HostAddress}}/api/AiAssistant/ChatVentas
+Content-Type: application/json
+
+{
+  "conversationId": "ventas-chat-1",
+  "message": "Dame un resumen de ventas de Oxxo esta semana y dime si va mejor o peor.",
+  "modulo": "ventas"
+}
+
+###
+
+POST {{VAAO_BE_HostAddress}}/api/AiAssistant/ChatVentas
+Content-Type: application/json
+
+{
+  "conversationId": "ventas-chat-1",
+  "message": "Y cual fue el mejor cliente del mes pasado?",
+  "modulo": "ventas"
+}
+
+###
