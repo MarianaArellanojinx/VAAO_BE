@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Net.Sockets;
 using Microsoft.Extensions.Options;
 using VAAO_BE.Entities;
 using VAAO_BE.Options;
@@ -73,33 +74,42 @@ public class AzureOpenAiService : IAzureOpenAiService
         httpRequest.Headers.Add("api-key", _options.ApiKey);
         httpRequest.Content = new StringContent(JsonSerializer.Serialize(payload, JsonOptions), Encoding.UTF8, "application/json");
 
-        using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
-        var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            throw new InvalidOperationException($"Azure OpenAI request failed with status {(int)response.StatusCode}: {responseContent}");
+            using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Azure OpenAI request failed with status {(int)response.StatusCode}: {responseContent}");
+            }
+
+            using var document = JsonDocument.Parse(responseContent);
+            var root = document.RootElement;
+            var answer = root.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? string.Empty;
+            var model = root.TryGetProperty("model", out var modelElement) ? modelElement.GetString() ?? string.Empty : string.Empty;
+
+            var usage = new OpenAiUsage();
+            if (root.TryGetProperty("usage", out var usageElement))
+            {
+                usage.PromptTokens = usageElement.TryGetProperty("prompt_tokens", out var promptTokens) ? promptTokens.GetInt32() : 0;
+                usage.CompletionTokens = usageElement.TryGetProperty("completion_tokens", out var completionTokens) ? completionTokens.GetInt32() : 0;
+                usage.TotalTokens = usageElement.TryGetProperty("total_tokens", out var totalTokens) ? totalTokens.GetInt32() : 0;
+            }
+
+            return new OpenAiChatResponse
+            {
+                Answer = answer,
+                Model = model,
+                Usage = usage
+            };
         }
-
-        using var document = JsonDocument.Parse(responseContent);
-        var root = document.RootElement;
-        var answer = root.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? string.Empty;
-        var model = root.TryGetProperty("model", out var modelElement) ? modelElement.GetString() ?? string.Empty : string.Empty;
-
-        var usage = new OpenAiUsage();
-        if (root.TryGetProperty("usage", out var usageElement))
+        catch (HttpRequestException ex) when (ex.InnerException is SocketException)
         {
-            usage.PromptTokens = usageElement.TryGetProperty("prompt_tokens", out var promptTokens) ? promptTokens.GetInt32() : 0;
-            usage.CompletionTokens = usageElement.TryGetProperty("completion_tokens", out var completionTokens) ? completionTokens.GetInt32() : 0;
-            usage.TotalTokens = usageElement.TryGetProperty("total_tokens", out var totalTokens) ? totalTokens.GetInt32() : 0;
+            throw new InvalidOperationException(
+                $"No se pudo resolver el host de Azure OpenAI. Revisa AzureOpenAI:Endpoint en appsettings. Valor actual: {_options.Endpoint}",
+                ex);
         }
-
-        return new OpenAiChatResponse
-        {
-            Answer = answer,
-            Model = model,
-            Usage = usage
-        };
     }
 
     private string BuildRequestUri()
@@ -121,10 +131,30 @@ public class AzureOpenAiService : IAzureOpenAiService
             throw new InvalidOperationException("AzureOpenAI:Endpoint is not configured.");
         }
 
+        if (!Uri.TryCreate(_options.Endpoint, UriKind.Absolute, out var endpointUri))
+        {
+            throw new InvalidOperationException("AzureOpenAI:Endpoint no tiene un formato valido.");
+        }
+
+        if (!string.Equals(endpointUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("AzureOpenAI:Endpoint debe usar https.");
+        }
+
+        if (!endpointUri.Host.Contains("openai.azure.com", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"AzureOpenAI:Endpoint no parece ser valido. Debe terminar en openai.azure.com. Valor actual: {_options.Endpoint}");
+        }
+
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
         {
             throw new InvalidOperationException("AzureOpenAI:ApiKey is not configured.");
         }
 
+        if (_options.Endpoint.Contains("tu-recurso.openai.azure.com", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("AzureOpenAI:Endpoint sigue con el placeholder y debe reemplazarse por tu recurso real.");
+        }
     }
 }
