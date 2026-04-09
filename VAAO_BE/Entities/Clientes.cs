@@ -30,5 +30,6 @@ namespace VAAO_BE.Entities
         public string? Ubicacion { get; set; }
         public bool? EsPlanta { get; set; }
         public double? PrecioHielo { get; set; }
+        public bool? Eliminado { get; set; }
     }
 }

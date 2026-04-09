@@ -43,10 +43,9 @@ namespace VAAO_BE.Repositories
                     _context.Cliente_Conservador.Remove(c);
                 }
                 await _context.SaveChangesAsync();
-                var cliente = _context.Clientes.Find(id);
+                var cliente = await _context.Clientes.FindAsync(id);
                 if (cliente is null) throw new Exception("cliente no encontrado");
-
-                _context.Clientes.Remove(cliente);
+                cliente.Eliminado = true;
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -67,6 +66,7 @@ namespace VAAO_BE.Repositories
                 var result = from u in usuarios
                              join c in clientes
                              on u.IdUser equals c.IdUser
+                             where c.Eliminado == false
                              select new
                              {
                                 Calle = c.Calle,
