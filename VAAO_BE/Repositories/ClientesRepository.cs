@@ -22,7 +22,7 @@ namespace VAAO_BE.Repositories
             {
                 payload.FechaAlta = DateTime.Now.AddHours(-6);
                 payload.FechaBaja = null;
-
+                payload.Eliminado = false;
                 await _context.Clientes.AddAsync(payload);
                 await _context.SaveChangesAsync();
             }
